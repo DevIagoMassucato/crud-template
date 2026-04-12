@@ -17,43 +17,46 @@ public class PersonController {
     private final PersonService personService;
 
     @PostMapping
-    public ResponseEntity<PersonResponse> createPerson(@Valid @RequestBody PersonRequest personRequest){
-        PersonResponse personResponse = personService.createPerson(personRequest);
-
+    public ResponseEntity<PersonResponse> create(@Valid @RequestBody PersonPostRequest personPostRequest){
+        PersonResponse personResponse = personService.create(personPostRequest);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(personResponse);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<PersonResponse> replacePerson(
+    @PatchMapping("/{id}")
+    public ResponseEntity<PersonResponse> update(
             @PathVariable Long id,
-            @Valid @RequestBody PersonRequest personRequest){
-        PersonResponse personResponse = personService.replacePerson(id, personRequest);
+            @Valid @RequestBody PersonPatchRequest personPatchRequest){
+        PersonResponse personResponse = personService.update(id, personPatchRequest);
+        return ResponseEntity.ok(personResponse);
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<PersonResponse> replace(
+            @PathVariable Long id,
+            @Valid @RequestBody PersonPutRequest personPutRequest){
+        PersonResponse personResponse = personService.replace(id, personPutRequest);
         return ResponseEntity.ok(personResponse);
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<PersonResponse>> findAllPagePerson(Pageable pageable) {
-        Page<PersonEntity> personEntityPage = personService.findAllPagePerson(pageable);
+    public ResponseEntity<PageResponse<PersonResponse>> findAllPage(Pageable pageable) {
+        Page<PersonEntity> personEntityPage = personService.findAllPage(pageable);
         Page<PersonResponse> personResponsePage = personEntityPage.map(PersonResponse::fromEntity);
         PageResponse<PersonResponse> response = PageResponse.of(personResponsePage);
-
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PersonResponse> findByIdPerson(@PathVariable Long id) {
-        PersonResponse personResponse = personService.findByIdPerson(id);
-
+    public ResponseEntity<PersonResponse> findById(@PathVariable Long id) {
+        PersonResponse personResponse = personService.findById(id);
         return ResponseEntity.ok(personResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePerson(@PathVariable Long id) {
-        personService.deletePerson(id);
-
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        personService.delete(id);
         return ResponseEntity
                 .noContent()
                 .build();

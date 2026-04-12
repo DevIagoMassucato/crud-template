@@ -3,7 +3,6 @@ package com.iagomassucato.crud.template.shared;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
-
 import java.util.List;
 
 @Getter

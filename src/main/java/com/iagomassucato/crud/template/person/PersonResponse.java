@@ -5,7 +5,7 @@ public record PersonResponse(
         String firstName,
         String lastName,
         String email,
-        Long cpf,
+        String cpf,
         Integer age) {
 
     public static PersonResponse fromEntity(PersonEntity personEntity) {

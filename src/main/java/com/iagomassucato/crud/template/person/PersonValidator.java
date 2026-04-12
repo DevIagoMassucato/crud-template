@@ -13,7 +13,7 @@ public class PersonValidator {
 
     private final PersonRepository personRepository;
 
-    public void validateUniqueFields(String email, Long cpf, Long id) {
+    public void validateUniqueFields(String email, String cpf, Long id) {
         Map<String, Object> errors = new LinkedHashMap<>();
 
         if (isEmailAlreadyUsed(email, id)) {
@@ -26,7 +26,7 @@ public class PersonValidator {
 
         if (!errors.isEmpty()) {
             throw new ApiException(
-                    ErrorEnum.DATABASE_VIOLATION,
+                    ErrorEnum.DATA_INTEGRITY_VIOLATION,
                     errors);
         }
     }
@@ -37,7 +37,7 @@ public class PersonValidator {
                 : personRepository.existsByEmailAndIdNot(email, id);
     }
 
-    private boolean isCpfAlreadyUsed(Long cpf, Long id) {
+    private boolean isCpfAlreadyUsed(String cpf, Long id) {
         return (id == null)
                 ? personRepository.existsByCpf(cpf)
                 : personRepository.existsByCpfAndIdNot(cpf, id);
