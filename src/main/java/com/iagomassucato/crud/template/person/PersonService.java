@@ -22,69 +22,37 @@ public class PersonService {
         return PersonResponse.fromEntity(personEntitySaved);
     }
 
-    public PersonEntity save(PersonEntity personEntity){
-        return personRepository.save(personEntity);
-    }
+    public PersonResponse update(Long id, PersonPatchRequest personPatchRequest) {
 
-    public PersonEntity toEntity(PersonPostRequest personPostRequest){
-        return PersonEntity.builder()
-                .firstName(personPostRequest.firstName())
-                .lastName(personPostRequest.lastName())
-                .email(personPostRequest.email())
-                .cpf(personPostRequest.cpf())
-                .age(personPostRequest.age())
-                .build();
-    }
-
-    public Page<PersonEntity> findAllPage(Pageable pageable) {
-        return personRepository.findAll(pageable);
-    }
-
-    private PersonEntity findByIdOrThrow(Long id) {
-        return personRepository.findById(id)
-                .orElseThrow(() -> new ApiException(
-                        ErrorEnum.NOT_FOUND,
-                        Map.of(
-                            "id", id,
-                                "message","person with id " + id + " not found")
-                ));
-    }
-
-    public PersonResponse findById(Long id) {
-        return PersonResponse.fromEntity(findByIdOrThrow(id));
-    }
-
-    public PersonResponse update(Long id, PersonPatchRequest request) {
-
-        PersonEntity entity = findByIdOrThrow(id);
+        PersonEntity personEntity = findByIdOrThrow(id);
 
         personValidator.validateUniqueFields(
-                request.email(),
-                request.cpf(),
+                personPatchRequest.email(),
+                personPatchRequest.cpf(),
                 id
         );
 
-        if (request.firstName() != null) {
-            entity.updateFirstName(request.firstName());
+        if (personPatchRequest.firstName() != null) {
+            personEntity.updateFirstName(personPatchRequest.firstName());
         }
 
-        if (request.lastName() != null) {
-            entity.updateLastName(request.lastName());
+        if (personPatchRequest.lastName() != null) {
+            personEntity.updateLastName(personPatchRequest.lastName());
         }
 
-        if (request.email() != null) {
-            entity.updateEmail(request.email());
+        if (personPatchRequest.email() != null) {
+            personEntity.updateEmail(personPatchRequest.email());
         }
 
-        if (request.cpf() != null) {
-            entity.updateCpf(request.cpf());
+        if (personPatchRequest.cpf() != null) {
+            personEntity.updateCpf(personPatchRequest.cpf());
         }
 
-        if (request.age() != null) {
-            entity.updateAge(request.age());
+        if (personPatchRequest.age() != null) {
+            personEntity.updateAge(personPatchRequest.age());
         }
 
-        PersonEntity saved = personRepository.save(entity);
+        PersonEntity saved = personRepository.save(personEntity);
 
         return PersonResponse.fromEntity(saved);
     }
@@ -109,8 +77,40 @@ public class PersonService {
         return PersonResponse.fromEntity(personEntitySaved);
     }
 
+    public Page<PersonEntity> findAllPage(Pageable pageable) {
+        return personRepository.findAll(pageable);
+    }
+
+    public PersonResponse findById(Long id) {
+        return PersonResponse.fromEntity(findByIdOrThrow(id));
+    }
+
     public void delete(Long id){
         PersonEntity personEntity = findByIdOrThrow(id);
         personRepository.delete(personEntity);
+    }
+
+    private PersonEntity save(PersonEntity personEntity){
+        return personRepository.save(personEntity);
+    }
+
+    private PersonEntity toEntity(PersonPostRequest personPostRequest){
+        return PersonEntity.builder()
+                .firstName(personPostRequest.firstName())
+                .lastName(personPostRequest.lastName())
+                .email(personPostRequest.email())
+                .cpf(personPostRequest.cpf())
+                .age(personPostRequest.age())
+                .build();
+    }
+
+    private PersonEntity findByIdOrThrow(Long id) {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new ApiException(
+                        ErrorEnum.NOT_FOUND,
+                        Map.of(
+                                "id", id,
+                                "message","person with id " + id + " not found")
+                ));
     }
 }
