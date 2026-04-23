@@ -3,7 +3,6 @@ package com.iagomassucato.crud.template.person;
 import com.iagomassucato.crud.template.exception.DomainValidationException;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Objects;
 
 @Entity
 @Table(
@@ -17,13 +16,24 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PersonEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String firstName;
+
+    @Column(nullable = false)
     private String lastName;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String cpf;
+
+    @Column(nullable = false)
     private Integer age;
 
     @Builder
@@ -34,45 +44,44 @@ public class PersonEntity {
             String cpf,
             Integer age
     ){
-        this.firstName = Objects.requireNonNull(firstName);
-        this.lastName = Objects.requireNonNull(lastName);
-        this.email = Objects.requireNonNull(email);
-        this.cpf = Objects.requireNonNull(cpf);
-        this.age = Objects.requireNonNull(age);
+        this.firstName = validateString(firstName, "firstName");
+        this.lastName = validateString(lastName, "lastName");
+        this.email = validateString(email, "email");
+        this.cpf = validateString(cpf, "cpf");
+        this.age = validateAge(age);
     }
 
     public void updateFirstName(String firstName) {
-        if (firstName == null || firstName.isBlank()) {
-            throw new DomainValidationException("firstName", "firstName is required");
-        }
-        this.firstName = firstName;
+        this.firstName = validateString(firstName, "firstName");
     }
 
     public void updateLastName(String lastName) {
-        if (lastName == null || lastName.isBlank()) {
-            throw new DomainValidationException("lastName", "lastName is required");
-        }
-        this.lastName = lastName;
+        this.lastName = validateString(lastName, "lastName");
     }
 
     public void updateEmail(String email) {
-        if (email == null || email.isBlank()) {
-            throw new DomainValidationException("email", "email is required");
-        }
-        this.email = email;
+        this.email = validateString(email, "email");
     }
 
     public void updateCpf(String cpf) {
-        if (cpf == null || cpf .isBlank()) {
-            throw new DomainValidationException("cpf", "cpf is required");
-        }
-        this.cpf = cpf;
+        this.cpf = validateString(cpf, "cpf");
     }
 
     public void updateAge(Integer age) {
+        this.age = validateAge(age);
+    }
+
+    private String validateString(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new DomainValidationException(fieldName, fieldName + " is required");
+        }
+        return value;
+    }
+
+    private Integer validateAge(Integer age) {
         if (age == null || age <= 0) {
             throw new DomainValidationException("age", "age is required");
         }
-        this.age = age;
+        return age;
     }
 }
